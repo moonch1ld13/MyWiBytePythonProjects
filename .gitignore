@@ -1,0 +1,11 @@
+# Ignore personal workspace states, but allow the classroom settings layout
+.vscode/*
+!.vscode/settings.json
+
+# Ignore Python runtime compiled leftovers
+__pycache__/
+*.pyc
+*.pyo
+
+# Safety net: ignore accidental local package folders
+colorama/

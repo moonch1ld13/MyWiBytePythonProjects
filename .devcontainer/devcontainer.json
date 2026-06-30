@@ -1,0 +1,53 @@
+{
+  "name": "WiByte Python Lab",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/desktop-lite:1": {}
+  },
+  "forwardPorts": [6080],
+
+  // ALIGN TERMINAL PATH: Prioritizes the developer Python environment
+  // PATH_TO_PYTHON was needed to ensure the run button also responds to the correct (usr/local/bin) path
+  "containerEnv": {
+    "PATH": "/usr/local/bin:${localEnv:PATH}",
+    "PATH_TO_PYTHON": "/usr/local/bin/python3"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.copilot", 
+        "ms-python.python"
+      ],
+      "settings": {
+        // Tells the VS Code "Play" button exactly which Python engine to trigger
+        "python.defaultInterpreterPath": "/usr/local/bin/python3",
+
+        // Hides the background package installation folders from the student's file panel
+        "files.exclude": {
+          "**/*.dist-info": true,
+          "**/colorama": true,
+          "**/pyfiglet": true,
+          "**/*.pyc": true,
+          "**/__pycache__": true
+        },
+
+        // Disables the "Quick Fix" lightbulb so students must fix their own typos
+
+        // Efficacy of all of this and many other experiments is debatable. Ctrl + i could not be tamed, And the sidebar chat also looks unpredictable. 
+        "editor.lightbulb.enabled": "off",
+        "github.copilot.editor.enableCodeActions": false,
+
+        // Standard coding aids (IntelliSense) stay active
+        "editor.suggestOnTriggerCharacters": true,
+        "editor.parameterHints.enabled": true,
+
+        // This ensures the README is the first thing they see
+        "workbench.startupEditor": "readme"
+      }
+    }
+  },
+  // This command installs tools, and forces the local editor to use the correct Python interpreter path
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y python3-tk && pip3 install colorama pyfiglet"
+}
