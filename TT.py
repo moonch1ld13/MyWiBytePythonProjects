@@ -30,7 +30,41 @@ def determine_winner(m1, m2, order = 1):
                 return k[v.index(min(v))]
             else:
                 return k[v.index(max(v))]
+            
+
+def best_category(card):
+    # check if it's Toji or Maki first
+    if float(card['CE']) == 0.0:
+        return 'C' 
+    
+    # turning them into numbers it makes it a bit easier ;-;
+    ce = float(card['CE'])
+    hth = float(card['HtH'])
+    i = float(card['Intellect'])
+    a = float(card['Agility'])
+
+    high_physical = max(hth, i, a)
+
+    if high_physical >= 8.0:
+        if high_physical == hth:
+            return 'H'
+        elif high_physical == i:
+            return 'I'
+        else:
+            return 'A'
         
+    # If they have lower physical stasts then it checks the CE reserve if they're HIGH on CE
+    if ce > 9000:
+        return 'C'
+    
+    # if the CE reserves are also bad, then just choose the highest physical stat
+    if high_physical == hth:
+        return 'H'
+    elif high_physical == i:
+        return 'I'
+    else:
+        return 'A'
+
 
 #Introduce the game!
 
@@ -63,7 +97,6 @@ computah_cards = all_cards[1::2]
 table_cards = []
 
 # Mapping Dictionary
-
 mapping_dict = {}
 for key in relevant_keys:
     mapping_dict[key[0]] = key          
@@ -75,6 +108,7 @@ for key in relevant_keys:
 chance = random.choice(['player', 'computer'])
 game_over = False
 
+# Game loop
 while not game_over:
     print()
     print(Fore.YELLOW +'player cards: ', len(player_cards), 'copmuter cards: ', len(computah_cards), 'table cards: ', len(table_cards)) 
@@ -95,13 +129,15 @@ while not game_over:
     display_card(player)
     print()
 
+
+    # Choosing the stats
     if chance == 'player':
         chosen_key = input("Which stat do you choose?")
         chance = "computer"
     elif chance == "computer":
         input('press enter to continue')
         print()
-        chosen_key = random.choice(list(mapping_dict.keys()))
+        chosen_key = best_category(computah) #random.choice(list(mapping_dict.keys()))
         chance = "player"
 
 
@@ -121,10 +157,12 @@ while not game_over:
     print()
 
 
-    if chosen_key in ['HtH', 'Intellect', 'Agility']:
+    if key_requested in ['HtH', 'Intellect', 'Agility']:
         #Larger the better
         winner = determine_winner(float(value_player), float(value_comput))
     else:
+        # This is here because heavenly restriction is really tricky as curse users/sorcerers use CE to feel the presence of others but heavenly restrictions brings the CE level down to 0, making them undetectable
+        # CE is normally whoever has the highest reserves unless it's an individual with Heavenly Restriction (Only Toji and Maki <3)
         winner = determine_winner(float(value_player), float(value_comput), 0)
 
     print(Fore.LIGHTRED_EX + winner, " won!")
@@ -132,13 +170,17 @@ while not game_over:
     print()
     input('press enter to continue')
 
+    # Things that happen after choosing the stats
     if winner == 'player':
         player_cards.extend(table_cards)
         table_cards.clear()
+        chance = 'player' # This way the winner of the round can keep player just like in the real Top Trumps game (or at least they way I've played it)
     elif winner == 'computah':
         computah_cards.extend(table_cards)
         table_cards.clear()
+        chance = 'computer'
 
+    # Winning
     if len(player_cards) == 0:
         print(Fore.RED + "The computer won the game!")
         game_over = True
