@@ -135,7 +135,7 @@ while not game_over:
     if winner == 'player':
         player_cards.extend(table_cards)
         table_cards.clear()
-    elif winner == 'computer':
+    elif winner == 'computah':
         computah_cards.extend(table_cards)
         table_cards.clear()
 
